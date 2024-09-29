@@ -1,27 +1,3 @@
-<script>
-export default {
-  data() {
-    return {
-      userId: null,
-    };
-  },
-  mounted() {
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-web-app.js';
-    script.onload = () => {
-      window.Telegram.WebApp.ready();
-
-      const user = window.Telegram.WebApp.initDataUnsafe.user;
-      if (user && user.id) {
-        alert(user.id)
-        this.userId = user.id;
-      }
-    };
-    document.head.appendChild(script);
-  },
-};
-</script>
-
 <template>
   <div class="services-form">
     <h2>Форма ввода информации об услугах</h2>
@@ -103,7 +79,22 @@ export default {
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
+      userId: null
     };
+  },
+  mounted() {
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-web-app.js';
+    script.onload = () => {
+      window.Telegram.WebApp.ready();
+
+      const user = window.Telegram.WebApp.initDataUnsafe.user;
+      if (user && user.id) {
+        alert(user.id)
+        this.userId = user.id;
+      }
+    };
+    document.head.appendChild(script);
   },
   methods: {
     onCategoryChange(value) {
