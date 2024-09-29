@@ -116,7 +116,7 @@ export default {
     removeService(index) {
       this.services.splice(index, 1);
     },
-    saveInfo() {
+    async saveInfo() {
 
       if (!this.selectedCategory) {
         alert('Пожалуйста, выбирите категорию услуг');
@@ -141,7 +141,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('http://localhost:8000/api/v1/orders/', dataToSend);
+        const response = await this.axios.post('http://localhost:8000/api/v1/orders/', dataToSend);
         console.log('Данные успешно сохранены:', response.data);
         alert('Информация успешно сохранена');
       } catch (error) {
