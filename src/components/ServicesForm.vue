@@ -133,7 +133,23 @@ export default {
         return;
       }
 
-      
+      const dataToSend = {
+        tasks = this.services,
+        time_start: this.startTime,
+        time_end: this.endTime,
+        work_days: this.workingDays,
+      };
+
+      try {
+        const response = await axios.post('http://localhost:8000/api/v1/orders/', dataToSend);
+        console.log('Данные успешно сохранены:', response.data);
+        alert('Информация успешно сохранена');
+      } catch (error) {
+        console.error('Ошибка при сохранении данных:', error);
+        alert('Произошла ошибка при сохранении данных');
+      }
+
+    
 
       console.log(`Рабочее время: с ${this.startTime} до ${this.endTime}, Рабочие дни: ${this.workingDays.join(', ')}`);
       console.log('Список услуг:', this.services);
