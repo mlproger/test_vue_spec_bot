@@ -42,10 +42,10 @@
       <h3>Рабочее время</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-time-picker v-model="startTime" format="HH:mm" @change="onStartTimeChange" />
+          <a-time-picker v-model="startTime" format="HH:mm" readonly @change="onStartTimeChange" />
         </a-form-item>
         <a-form-item label="Конец">
-          <a-time-picker v-model="endTime" format="HH:mm" @change="onEndTimeChange" />
+          <a-time-picker v-model="endTime" format="HH:mm" readonly @change="onEndTimeChange" />
         </a-form-item>
         <a-form-item label="Рабочие дни">
           <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
