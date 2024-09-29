@@ -134,7 +134,7 @@ export default {
       }
 
       const dataToSend = {
-        tasks = this.services,
+        tasks: this.services,
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
