@@ -132,7 +132,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('http://localhost:8000/api/v1/orders/', dataToSend);
+        const response = await axios.post('https://b6ac-188-243-183-39.ngrok-free.app/api/v1/orders/', dataToSend);
         console.log('Данные успешно сохранены:', response.data);
         alert('Информация успешно сохранена');
       } catch (error) {
