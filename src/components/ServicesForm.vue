@@ -117,10 +117,23 @@ export default {
       this.services.splice(index, 1);
     },
     saveInfo() {
+
+      if (!this.selectedCategory) {
+        alert('Пожалуйста, выбирите категорию услуг');
+        return;
+      }
+
+      if (!this.cost) {
+        alert('Пожалуйста, укажите цену');
+        return;
+      }
+
       if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
         alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
         return;
       }
+
+      
 
       console.log(`Рабочее время: с ${this.startTime} до ${this.endTime}, Рабочие дни: ${this.workingDays.join(', ')}`);
       console.log('Список услуг:', this.services);
