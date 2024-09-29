@@ -42,10 +42,10 @@
       <h3>Рабочее время</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-time-picker v-model="startTime" format="HH:mm" :input-readonly="true" @click="removeFocus" @focus="removeFocus" @change="onStartTimeChange" />
+          <a-time-picker v-model="startTime" format="HH:mm" @change="onStartTimeChange" />
         </a-form-item>
         <a-form-item label="Конец">
-          <a-time-picker v-model="endTime" format="HH:mm" :input-readonly="true" @click="removeFocus" @focus="removeFocus" @change="onEndTimeChange" />
+          <a-time-picker v-model="endTime" format="HH:mm" @change="onEndTimeChange" />
         </a-form-item>
         <a-form-item label="Рабочие дни">
           <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
@@ -65,6 +65,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ServicesForm',
   data() {
@@ -117,17 +119,6 @@ export default {
       this.services.splice(index, 1);
     },
     async saveInfo() {
-
-      if (!this.selectedCategory) {
-        alert('Пожалуйста, выбирите категорию услуг');
-        return;
-      }
-
-      if (!this.cost) {
-        alert('Пожалуйста, укажите цену');
-        return;
-      }
-
       if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
         alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
         return;
@@ -141,18 +132,13 @@ export default {
       };
 
       try {
-        const response = await this.axios.post('http://localhost:8000/api/v1/orders/', dataToSend);
+        const response = await axios.post('http://localhost:8000/api/v1/orders/', dataToSend);
         console.log('Данные успешно сохранены:', response.data);
         alert('Информация успешно сохранена');
       } catch (error) {
         console.error('Ошибка при сохранении данных:', error);
         alert('Произошла ошибка при сохранении данных');
       }
-
-    
-
-      console.log(`Рабочее время: с ${this.startTime} до ${this.endTime}, Рабочие дни: ${this.workingDays.join(', ')}`);
-      console.log('Список услуг:', this.services);
     },
     resetForm() {
       this.selectedCategory = null;
