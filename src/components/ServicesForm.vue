@@ -143,7 +143,7 @@ export default {
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
-        user_id: this.userId
+        user_id: this.userId.toString()
       };
 
       try {
