@@ -140,7 +140,6 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       if (user && user.id) {
         this.userId = user.id;
-        alert(this.userId);
       }
     };
     document.head.appendChild(script);
@@ -151,7 +150,7 @@ export default {
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`)
         .then(response => {
           const data = response.data;
-          if (data.work_days.length === 0){
+          if (data.work_days.length == 0){
             this.editMode = 1;
           }
           else{
