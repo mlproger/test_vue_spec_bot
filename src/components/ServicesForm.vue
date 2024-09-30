@@ -150,8 +150,8 @@ export default {
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`)
         .then(response => {
           const data = response.data;
-          if (data.work_days.length == 0){
-            this.editMode = 1;
+          if (data.tasks.length === 0){
+            this.editMode = true;
           }
           else{
             this.services = data.tasks || [];
