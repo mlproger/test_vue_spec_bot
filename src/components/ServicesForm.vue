@@ -147,6 +147,7 @@ export default {
   },
   methods: {
     loadInitialData() {
+    alert(this.userId);
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
@@ -161,6 +162,11 @@ export default {
             this.workingDays = data.work_days || [];
           }
           
+        })
+        .catch(error => {
+            this.editMode = 1;
+            alert(error);
+          console.error('Ошибка при загрузке данных:', error);
         });
     },
     formatTime(isoString) {
