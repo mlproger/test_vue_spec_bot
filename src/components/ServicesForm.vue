@@ -140,15 +140,13 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       if (user && user.id) {
         this.userId = user.id;
-        alert(this.userId);
+        this.loadInitialData();
       }
     };
     document.head.appendChild(script);
   },
-  this.loadInitialData();
   methods: {
     loadInitialData() {
-    alert(this.userId);
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
