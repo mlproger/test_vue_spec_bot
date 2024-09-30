@@ -161,11 +161,6 @@ export default {
             this.workingDays = data.work_days || [];
           }
           
-        })
-        .catch(error => {
-            this.editMode = 1;
-            alert(error);
-          console.error('Ошибка при загрузке данных:', error);
         });
     },
     formatTime(isoString) {
