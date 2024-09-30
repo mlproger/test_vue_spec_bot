@@ -164,6 +164,7 @@ export default {
         })
         .catch(error => {
             this.editMode = 1;
+            alert(error);
           console.error('Ошибка при загрузке данных:', error);
         });
     },
