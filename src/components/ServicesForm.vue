@@ -147,7 +147,9 @@ export default {
   },
   methods: {
     loadInitialData() {
-      axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`)
+      axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, {headers: new Headers({
+        "ngrok-skip-browser-warning": "69420",
+      }),})
         .then(response => {
           const data = response.data;
           if (data.tasks.length === 0){
