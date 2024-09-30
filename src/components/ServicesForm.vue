@@ -140,6 +140,7 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       if (user && user.id) {
         this.userId = user.id;
+        alert(this.userId);
       }
     };
     document.head.appendChild(script);
