@@ -1,6 +1,44 @@
 <template>
   <div class="services-form">
-    <h2>Форма ввода информации об услугах</h2>
+    <h2>Информация об услугах</h2>
+
+    <!-- Режим просмотра данных -->
+    <div v-if="!editMode">
+      <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
+      <a-list bordered>
+        <a-list-item v-for="(service, index) in services" :key="index">
+          <div style="flex-grow: 1;">
+            {{ service.category }} - {{ service.cost }} ₽
+          </div>
+        </a-list-item>
+      </a-list>
+
+      <h3 style="margin-top: 20px;">Рабочее время:</h3>
+      <a-list bordered>
+        <a-list-item>
+          <div style="flex-grow: 1;">
+            Начало: {{ startTime }}
+          </div>
+        </a-list-item>
+        <a-list-item>
+          <div style="flex-grow: 1;">
+            Конец: {{ endTime }}
+          </div>
+        </a-list-item>
+        <a-list-item>
+          <div style="flex-grow: 1;">
+            Рабочие дни: {{ workingDays.join(', ') }}
+          </div>
+        </a-list-item>
+      </a-list>
+
+      <a-button type="primary" @click="toggleEditMode" style="margin-top: 20px;">
+        Редактировать информацию
+      </a-button>
+    </div>
+
+    <!-- Режим редактирования данных -->
+    <div v-else>
     <a-form layout="vertical">
       <a-form-item label="Категория услуги">
         <a-select v-model="selectedCategory" placeholder="Выберите категорию" @change="onCategoryChange">
@@ -25,7 +63,6 @@
         Добавить услугу
       </a-button>
     </a-form>
-
     <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
     <a-list bordered>
       <a-list-item v-for="(service, index) in services" :key="index">
@@ -38,14 +75,13 @@
       </a-list-item>
     </a-list>
 
-    <div style="margin-top: 20px;">
-      <h3>Рабочее время</h3>
+      <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-time-picker v-model="startTime" format="HH:mm" @change="onStartTimeChange" />
+          <a-time-picker v-model="startTime" @change="onStartTimeChange" format="HH:mm" />
         </a-form-item>
         <a-form-item label="Конец">
-          <a-time-picker v-model="endTime" format="HH:mm" @change="onEndTimeChange" />
+          <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" />
         </a-form-item>
         <a-form-item label="Рабочие дни">
           <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
@@ -57,10 +93,14 @@
           </a-checkbox-group>
         </a-form-item>
       </a-form>
+
+      <a-button type="primary" @click="saveInfo" style="margin-top: 20px;">
+        Сохранить информацию
+      </a-button>
+      <a-button @click="toggleEditMode" style="margin-top: 20px; margin-left: 10px;">
+        Отмена
+      </a-button>
     </div>
-    <a-button type="primary" @click="saveInfo" style="margin-top: 20px;">
-      Сохранить информацию
-    </a-button>
   </div>
 </template>
 
@@ -79,8 +119,17 @@ export default {
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
-      userId: null
+      userId: null, // примерный ID пользователя
+      editMode: false,
     };
+  },
+  computed: {
+    formattedStartTime() {
+      return this.startTime ? this.formatTime(this.startTime) : 'Не установлено';
+    },
+    formattedEndTime() {
+      return this.endTime ? this.formatTime(this.endTime) : 'Не установлено';
+    },
   },
   mounted() {
     const script = document.createElement('script');
@@ -94,8 +143,54 @@ export default {
       }
     };
     document.head.appendChild(script);
+    this.loadInitialData();
   },
   methods: {
+    loadInitialData() {
+      axios.get(`http://localhost:8000/api/v1/orders/${this.userId}/`)
+        .then(response => {
+          const data = response.data;
+          this.services = data.tasks || [];
+            this.startTime = data.time_start ? this.formatTime(data.time_start) : null;
+            this.endTime = data.time_end ? this.formatTime(data.time_end) : null;
+            this.workingDays = data.work_days || [];
+            console.log(data);
+        })
+        .catch(error => {
+            this.editMode = 1;
+          console.error('Ошибка при загрузке данных:', error);
+        });
+    },
+    formatTime(isoString) {
+      const date = new Date(isoString);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    },
+    toggleEditMode() {
+      this.editMode = !this.editMode;
+    },
+    removeService(index) {
+      this.services.splice(index, 1);
+    },
+    resetForm(){
+        this.selectedCategory = null;
+        this.cost = null;
+
+    },
+    addService() {
+      if (this.selectedCategory && this.cost !== null) {
+        this.services.push({
+          category: this.selectedCategory,
+          cost: this.cost,
+        });
+
+        // Сброс формы после добавления услуги
+        this.resetForm();
+      } else {
+        alert('Пожалуйста, выберите категорию и укажите стоимость');
+      }
+    },
     onCategoryChange(value) {
       this.selectedCategory = value;
       console.log('Выбрана категория:', this.selectedCategory);
@@ -116,23 +211,8 @@ export default {
       this.workingDays = value;
       console.log('Выбранные рабочие дни:', this.workingDays);
     },
-    addService() {
-      if (this.selectedCategory && this.cost !== null) {
-        this.services.push({
-          category: this.selectedCategory,
-          cost: this.cost,
-        });
-
-        // Сброс формы после добавления услуги
-        this.resetForm();
-      } else {
-        alert('Пожалуйста, выберите категорию и укажите стоимость');
-      }
-    },
-    removeService(index) {
-      this.services.splice(index, 1);
-    },
     async saveInfo() {
+
       if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
         alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
         return;
@@ -143,21 +223,25 @@ export default {
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
-        user_id: this.userId.toString()
+        user_id: this.userId,
       };
 
+      this.startTime = this.formatTime(dataToSend.time_start);
+      this.endTime = this.formatTime(dataToSend.time_end);
+
+      console.log(dataToSend);
+
       try {
-        const response = await axios.post('https://1b7a-188-243-183-39.ngrok-free.app/api/v1/orders/', dataToSend);
-        console.log('Данные успешно сохранены:', response.data);
+        await axios.get(`http://localhost:8000/api/v1/orders/${this.userId}/`);
+        await axios.put(`http://localhost:8000/api/v1/orders/${this.userId}`, dataToSend);
         alert('Информация успешно сохранена');
+        this.toggleEditMode(); // Вернуться в режим просмотра после сохранения
       } catch (error) {
-        console.error('Ошибка при сохранении данных:', error);
-        alert('Произошла ошибка при сохранении данных');
+        await axios.post(`http://localhost:8000/api/v1/orders/`, dataToSend);
+        this.editMode = 0;
+        console.error('Информация успешно сохранена', error);
+
       }
-    },
-    resetForm() {
-      this.selectedCategory = null;
-      this.cost = null;
     },
   },
 };
