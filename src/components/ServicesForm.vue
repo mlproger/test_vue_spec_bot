@@ -147,7 +147,7 @@ export default {
   },
   methods: {
     loadInitialData() {
-      axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
+      axios.get(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
           if (data.tasks.length === 0){
@@ -238,12 +238,12 @@ export default {
       console.log(dataToSend);
 
       try {
-        await axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`);
-        await axios.put(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}`, dataToSend);
+        await axios.get(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`);
+        await axios.put(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}`, dataToSend);
         alert('Информация успешно сохранена');
         this.toggleEditMode(); // Вернуться в режим просмотра после сохранения
       } catch (error) {
-        await axios.post(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/`, dataToSend);
+        await axios.post(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/`, dataToSend);
         this.editMode = 0;
         console.error('Информация успешно сохранена', error);
 
