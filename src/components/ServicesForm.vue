@@ -144,8 +144,8 @@ export default {
       }
     };
     document.head.appendChild(script);
-    this.loadInitialData();
   },
+  this.loadInitialData();
   methods: {
     loadInitialData() {
     alert(this.userId);
