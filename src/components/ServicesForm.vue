@@ -147,7 +147,7 @@ export default {
   },
   methods: {
     loadInitialData() {
-      axios.get(`http://localhost:8000/api/v1/orders/${this.userId}/`)
+      axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`)
         .then(response => {
           const data = response.data;
           this.services = data.tasks || [];
@@ -232,12 +232,12 @@ export default {
       console.log(dataToSend);
 
       try {
-        await axios.get(`http://localhost:8000/api/v1/orders/${this.userId}/`);
-        await axios.put(`http://localhost:8000/api/v1/orders/${this.userId}`, dataToSend);
+        await axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`);
+        await axios.put(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}`, dataToSend);
         alert('Информация успешно сохранена');
         this.toggleEditMode(); // Вернуться в режим просмотра после сохранения
       } catch (error) {
-        await axios.post(`http://localhost:8000/api/v1/orders/`, dataToSend);
+        await axios.post(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/`, dataToSend);
         this.editMode = 0;
         console.error('Информация успешно сохранена', error);
 
