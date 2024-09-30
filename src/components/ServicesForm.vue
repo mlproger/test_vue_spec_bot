@@ -140,6 +140,7 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       if (user && user.id) {
         this.userId = user.id;
+        alert(this.userId);
       }
     };
     document.head.appendChild(script);
@@ -150,15 +151,10 @@ export default {
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`)
         .then(response => {
           const data = response.data;
-          if (!data.tasks && !data.time_start && !data.time_end && !data.work_days){
-            this.editMode = 1;
-          }
-          else{
-            this.services = data.tasks || [];
+          this.services = data.tasks || [];
             this.startTime = data.time_start ? this.formatTime(data.time_start) : null;
             this.endTime = data.time_end ? this.formatTime(data.time_end) : null;
             this.workingDays = data.work_days || [];
-          }
           
         })
         .catch(error => {
