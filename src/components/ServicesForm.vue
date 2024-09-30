@@ -151,11 +151,16 @@ export default {
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`)
         .then(response => {
           const data = response.data;
-          this.services = data.tasks || [];
+          if (!data.tasks && !data.time_start && !data.time_end && !data.work_days){
+            this.editMode = 1;
+          }
+          else{
+            this.services = data.tasks || [];
             this.startTime = data.time_start ? this.formatTime(data.time_start) : null;
             this.endTime = data.time_end ? this.formatTime(data.time_end) : null;
             this.workingDays = data.work_days || [];
-            console.log(data);
+          }
+          
         })
         .catch(error => {
             this.editMode = 1;
