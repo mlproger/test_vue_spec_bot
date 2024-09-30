@@ -150,7 +150,6 @@ export default {
       axios.get(`https://e270-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
-          alert(data.tasks);
           if (data.tasks.length === 0){
             this.editMode = true;
           }
