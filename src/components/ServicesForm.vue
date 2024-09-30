@@ -140,7 +140,6 @@ export default {
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       if (user && user.id) {
         this.userId = user.id;
-        alert(this.userId);
       }
     };
     document.head.appendChild(script);
@@ -229,7 +228,7 @@ export default {
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
-        user_id: this.userId,
+        user_id: this.userId.toString(),
       };
 
       this.startTime = this.formatTime(dataToSend.time_start);
