@@ -65,7 +65,7 @@
         >
           <a-form layout="vertical">
             <a-form-item label="Категория услуги">
-              <a-select v-model="selectedCategory" placeholder="Выберите категорию" @change="onCategoryChange">
+              <a-select v-model="selectedCategory" placeholder="Выберите категорию">
                 <a-select-option v-for="category in categories" :key="category" :value="category">
                   {{ category }}
                 </a-select-option>
@@ -89,20 +89,20 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-input
-            readonly
-            @click="openTimePicker"
-            :value="formattedStartTime"
-            placeholder="Выберите время"
-          />
+          <div style="display: flex; align-items: center;">
+            <a-button type="primary" @click="openStartTimePicker">
+              {{ startTime ? 'Изменить время' : 'Добавить время' }}
+            </a-button>
+            <span style="margin-left: 10px;">{{ formattedStartTime }}</span>
+          </div>
           <a-modal
-            v-model:visible="isTimePickerVisible"
-            title="Выберите время"
+            v-model:visible="isStartTimePickerVisible"
+            title="Выберите время для начала"
             @cancel="closeTimePicker"
             @ok="closeTimePicker"
           >
             <a-time-picker
-              ref="timePicker"
+              ref="startTimePicker"
               v-model="startTime"
               @change="onStartTimeChange"
               format="HH:mm"
@@ -110,7 +110,25 @@
           </a-modal>
         </a-form-item>
         <a-form-item label="Конец">
-          <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
+          <div style="display: flex; align-items: center;">
+            <a-button type="primary" @click="openEndTimePicker">
+              {{ endTime ? 'Изменить время' : 'Добавить время' }}
+            </a-button>
+            <span style="margin-left: 10px;">{{ formattedEndTime }}</span>
+          </div>
+          <a-modal
+            v-model:visible="isEndTimePickerVisible"
+            title="Выберите время для конца"
+            @cancel="closeTimePicker"
+            @ok="closeTimePicker"
+          >
+            <a-time-picker
+              ref="endTimePicker"
+              v-model="endTime"
+              @change="onEndTimeChange"
+              format="HH:mm"
+            />
+          </a-modal>
         </a-form-item>
         <a-form-item label="Рабочие дни">
           <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
@@ -144,15 +162,16 @@ export default {
       selectedCategory: null,
       cost: null,
       startTime: null,
-      isServiceModalVisible: false,
-      isTimePickerVisible: false,
       endTime: null,
+      isServiceModalVisible: false,
+      isStartTimePickerVisible: false,
+      isEndTimePickerVisible: false,
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
       userId: null,
       editMode: false,
-      base_url: "https://73c3-188-243-183-39.ngrok-free.app"
+      base_url: "https://73c3-188-243-183-39.ngrok-free.app",
     };
   },
   computed: {
@@ -180,11 +199,15 @@ export default {
     showServiceModal() {
       this.isServiceModalVisible = true;
     },
-    openTimePicker() {
-      this.isTimePickerVisible = true;
+    openStartTimePicker() {
+      this.isStartTimePickerVisible = true;
+    },
+    openEndTimePicker() {
+      this.isEndTimePickerVisible = true;
     },
     closeTimePicker() {
-      this.isTimePickerVisible = false;
+      this.isStartTimePickerVisible = false;
+      this.isEndTimePickerVisible = false;
     },
     handleServiceModalCancel() {
       this.isServiceModalVisible = false;
@@ -210,11 +233,11 @@ export default {
         });
     },
     formatTime(isoString) {
-        if (!isoString) return ''; // Возврат пустой строки, если нет значения
-        const date = new Date(isoString);
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
+      if (!isoString) return '';
+      const date = new Date(isoString);
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
     },
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -227,60 +250,27 @@ export default {
       this.cost = null;
     },
     addService() {
-      if (this.selectedCategory && this.cost !== null) {
-        this.services.push({
-          category: this.selectedCategory,
-          cost: this.cost,
-        });
-
-        this.isServiceModalVisible = false;
-
-        // Сброс формы после добавления услуги
+      if (this.selectedCategory && this.cost) {
+        this.services.push({ category: this.selectedCategory, cost: this.cost });
         this.resetForm();
+        this.isServiceModalVisible = false;
       } else {
-        alert('Пожалуйста, выберите категорию и укажите стоимость');
+        alert('Пожалуйста, заполните все поля.');
       }
-    },
-    onCategoryChange(value) {
-      this.selectedCategory = value;
-      console.log('Выбрана категория:', this.selectedCategory);
-    },
-    onCostChange(value) {
-      this.cost = value;
-      console.log('Стоимость изменена:', this.cost);
     },
     onStartTimeChange(value) {
       this.startTime = value;
-      console.log('Начало рабочего времени:', this.startTime);
     },
     onEndTimeChange(value) {
       this.endTime = value;
-      console.log('Конец рабочего времени:', this.endTime);
     },
     onWorkingDaysChange(value) {
       this.workingDays = value;
-      console.log('Выбранные рабочие дни:', this.workingDays);
     },
-    async saveInfo() {
-      if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
-        alert('Пожалуйста, заполните все поля рабочего времени и выберите рабочие дни');
-        return;
-      }
-
-      const payload = {
-        time_start: this.startTime,
-        time_end: this.endTime,
-        work_days: this.workingDays,
-        tasks: this.services,
-      };
-
-      try {
-        await axios.post(`${this.base_url}/api/v1/orders/${this.userId}/`, payload, { headers: { 'ngrok-skip-browser-warning': "oke" } });
-        alert('Данные успешно сохранены');
-      } catch (error) {
-        console.error('Ошибка при сохранении данных:', error);
-        alert('Произошла ошибка при сохранении данных');
-      }
+    saveInfo() {
+      // Сохранение данных логики
+      // ...
+      this.editMode = false;
     },
   },
 };
@@ -295,21 +285,6 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-.time-picker-wrapper {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.time-icon {
-  position: absolute;
-  right: 10px; /* Положение иконки */
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  font-size: 18px; /* Размер иконки */
-  pointer-events: none; /* Игнорировать события, если не хотите вмешиваться */
 }
 .button-container {
   display: flex;
