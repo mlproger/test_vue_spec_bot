@@ -89,9 +89,18 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <div @mousedown.prevent="showPicker" contenteditable="false">
-            <a-time-picker v-model="startTime" @change="onStartTimeChange" format="HH:mm" placeholder="" :tabindex="-1"/>
-          </div>
+            <div class="time-picker-wrapper" @click="showPicker">
+                <a-time-picker
+                    ref="timePicker"
+                    v-model="startTime"
+                    @change="onStartTimeChange"
+                    format="HH:mm"
+                    placeholder=""
+                    :style="{ width: '100%' }"
+                    :tabindex="-1"
+                />
+                <span class="time-icon">🕒</span>
+            </div>
         </a-form-item>
         <a-form-item label="Конец">
           <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
@@ -289,6 +298,21 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.time-picker-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.time-icon {
+  position: absolute;
+  right: 10px; /* Положение иконки */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px; /* Размер иконки */
+  pointer-events: none; /* Игнорировать события, если не хотите вмешиваться */
 }
 .button-container {
   display: flex;
