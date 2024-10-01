@@ -15,12 +15,12 @@
       <a-list bordered>
         <a-list-item>
           <div style="flex-grow: 1;">
-            Начало: {{ startTime }}
+            Начало: {{ formattedStartTime }}
           </div>
         </a-list-item>
         <a-list-item>
           <div style="flex-grow: 1;">
-            Конец: {{ endTime }}
+            Конец: {{ formattedEndTime }}
           </div>
         </a-list-item>
         <a-list-item>
@@ -52,16 +52,16 @@
       </a-list>
 
       <div class="button-container">
-        <a-button type="primary" @click="showModal" class="mb-4">
+        <a-button type="primary" @click="showServiceModal" class="mb-4">
           Создать услугу
         </a-button>
 
         <!-- Модальное окно для добавления услуги -->
         <a-modal
-          v-model:visible="isModalVisible"
+          v-model:visible="isServiceModalVisible"
           title="Создание услуги"
           @ok="addService"
-          @cancel="handleCancel"
+          @cancel="handleServiceModalCancel"
         >
           <a-form layout="vertical">
             <a-form-item label="Категория услуги">
@@ -89,25 +89,25 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-            <a-input
-                readonly
-                @click="openTimePicker"
-                :value="formattedTime"
-                placeholder="Выберите время"
-            />
-            <a-modal
-                v-model:visible="isModalVisible"
-                title="Выберите время"
-                @cancel="closeTimePicker"
-                @ok="closeTimePicker"
-            >
+          <a-input
+            readonly
+            @click="openTimePicker"
+            :value="formattedStartTime"
+            placeholder="Выберите время"
+          />
+          <a-modal
+            v-model:visible="isTimePickerVisible"
+            title="Выберите время"
+            @cancel="closeTimePicker"
+            @ok="closeTimePicker"
+          >
             <a-time-picker
-                ref="timePicker"
-                v-model="startTime"
-                @change="onStartTimeChange"
-                format="HH:mm"
+              ref="timePicker"
+              v-model="startTime"
+              @change="onStartTimeChange"
+              format="HH:mm"
             />
-            </a-modal>
+          </a-modal>
         </a-form-item>
         <a-form-item label="Конец">
           <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
@@ -144,12 +144,13 @@ export default {
       selectedCategory: null,
       cost: null,
       startTime: null,
-      isModalVisible: false,
+      isServiceModalVisible: false,
+      isTimePickerVisible: false,
       endTime: null,
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
-      userId: null, // примерный ID пользователя
+      userId: null,
       editMode: false,
       base_url: "https://73c3-188-243-183-39.ngrok-free.app"
     };
@@ -167,7 +168,6 @@ export default {
     script.src = 'https://telegram.org/js/telegram-web-app.js';
     script.onload = () => {
       window.Telegram.WebApp.ready();
-
       const user = window.Telegram.WebApp.initDataUnsafe.user;
       if (user && user.id) {
         this.userId = user.id;
@@ -177,37 +177,35 @@ export default {
     document.head.appendChild(script);
   },
   methods: {
-    showModal() {
-      this.isModalVisible = true;
+    showServiceModal() {
+      this.isServiceModalVisible = true;
     },
     openTimePicker() {
-      this.isModalVisible = true;
+      this.isTimePickerVisible = true;
     },
     closeTimePicker() {
-      this.isModalVisible = false;
+      this.isTimePickerVisible = false;
     },
-    handleCancel() {
-      this.isModalVisible = false;
+    handleServiceModalCancel() {
+      this.isServiceModalVisible = false;
       this.resetForm();
     },
     loadInitialData() {
-      axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
+      axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
-          if (data.tasks.length === 0){
+          if (data.tasks.length === 0) {
             this.editMode = true;
-          }
-          else{
+          } else {
             this.services = data.tasks || [];
             this.startTime = data.time_start ? this.formatTime(data.time_start) : null;
             this.endTime = data.time_end ? this.formatTime(data.time_end) : null;
             this.workingDays = data.work_days || [];
           }
-          
         })
         .catch(error => {
-            this.editMode = 1;
-            alert(error);
+          this.editMode = true;
+          alert(error);
           console.error('Ошибка при загрузке данных:', error);
         });
     },
@@ -223,10 +221,9 @@ export default {
     removeService(index) {
       this.services.splice(index, 1);
     },
-    resetForm(){
-        this.selectedCategory = null;
-        this.cost = null;
-
+    resetForm() {
+      this.selectedCategory = null;
+      this.cost = null;
     },
     addService() {
       if (this.selectedCategory && this.cost !== null) {
@@ -235,7 +232,7 @@ export default {
           cost: this.cost,
         });
 
-        this.isModalVisible = false;
+        this.isServiceModalVisible = false;
 
         // Сброс формы после добавления услуги
         this.resetForm();
@@ -264,35 +261,24 @@ export default {
       console.log('Выбранные рабочие дни:', this.workingDays);
     },
     async saveInfo() {
-
       if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
-        alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
+        alert('Пожалуйста, заполните все поля рабочего времени и выберите рабочие дни');
         return;
       }
 
-      const dataToSend = {
-        tasks: this.services,
+      const payload = {
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
-        user_id: this.userId.toString(),
+        tasks: this.services,
       };
 
-      this.startTime = this.formatTime(dataToSend.time_start);
-      this.endTime = this.formatTime(dataToSend.time_end);
-
-      console.log(dataToSend);
-
       try {
-        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
-        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
-        alert('Информация успешно сохранена');
-        this.toggleEditMode(); // Вернуться в режим просмотра после сохранения
+        await axios.post(`${this.base_url}/api/v1/orders/${this.userId}/`, payload, { headers: { 'ngrok-skip-browser-warning': "oke" } });
+        alert('Данные успешно сохранены');
       } catch (error) {
-        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
-        this.editMode = 0;
-        console.error('Информация успешно сохранена', error);
-
+        console.error('Ошибка при сохранении данных:', error);
+        alert('Произошла ошибка при сохранении данных');
       }
     },
   },
