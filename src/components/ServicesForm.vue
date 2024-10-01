@@ -89,18 +89,25 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-            <div class="time-picker-wrapper" @click="showPicker">
-                <a-time-picker
-                    ref="timePicker"
-                    v-model="startTime"
-                    @change="onStartTimeChange"
-                    format="HH:mm"
-                    placeholder=""
-                    :style="{ width: '100%' }"
-                    :tabindex="-1"
-                />
-                <span class="time-icon">🕒</span>
-            </div>
+            <a-input
+                readonly
+                @click="openTimePicker"
+                :value="formattedTime"
+                placeholder="Выберите время"
+            />
+            <a-modal
+                v-model:visible="isModalVisible"
+                title="Выберите время"
+                @cancel="closeTimePicker"
+                @ok="closeTimePicker"
+            >
+            <a-time-picker
+                ref="timePicker"
+                v-model="startTime"
+                @change="onStartTimeChange"
+                format="HH:mm"
+            />
+            </a-modal>
         </a-form-item>
         <a-form-item label="Конец">
           <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
@@ -137,22 +144,22 @@ export default {
       selectedCategory: null,
       cost: null,
       startTime: null,
+      isModalVisible: false,
       endTime: null,
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
       userId: null, // примерный ID пользователя
       editMode: false,
-      isModalVisible: false,
       base_url: "https://73c3-188-243-183-39.ngrok-free.app"
     };
   },
   computed: {
     formattedStartTime() {
-      return this.startTime ? this.formatTime(this.startTime) : 'Не установлено';
+      return this.startTime ? this.formatTime(this.startTime) : '';
     },
     formattedEndTime() {
-      return this.endTime ? this.formatTime(this.endTime) : 'Не установлено';
+      return this.endTime ? this.formatTime(this.endTime) : '';
     },
   },
   mounted() {
@@ -173,8 +180,11 @@ export default {
     showModal() {
       this.isModalVisible = true;
     },
-    showPicker() {
-      this.$refs.timePicker.showPicker();
+    openTimePicker() {
+      this.isModalVisible = true;
+    },
+    closeTimePicker() {
+      this.isModalVisible = false;
     },
     handleCancel() {
       this.isModalVisible = false;
