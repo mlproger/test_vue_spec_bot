@@ -133,7 +133,7 @@ export default {
       userId: null, // примерный ID пользователя
       editMode: false,
       isModalVisible: false,
-      base_url: "https://e270-188-243-183-39.ngrok-free.app"
+      base_url: "https://73c3-188-243-183-39.ngrok-free.app"
     };
   },
   computed: {
