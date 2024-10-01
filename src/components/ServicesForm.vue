@@ -89,7 +89,9 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-time-picker ref="timePicker" v-model="startTime" :readonly="true" @click="showPicker" @change="onStartTimeChange" format="HH:mm" placeholder=""/>
+          <div @mousedown.prevent="showPicker" contenteditable="false">
+            <a-time-picker v-model="startTime" @change="onStartTimeChange" format="HH:mm" placeholder="" :tabindex="-1"/>
+          </div>
         </a-form-item>
         <a-form-item label="Конец">
           <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
