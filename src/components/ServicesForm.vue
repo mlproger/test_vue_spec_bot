@@ -89,7 +89,7 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-time-picker v-model="startTime" @change="onStartTimeChange" format="HH:mm" placeholder=""/>
+          <a-time-picker v-model="startTime" readOnly={true} @change="onStartTimeChange" format="HH:mm" placeholder=""/>
         </a-form-item>
         <a-form-item label="Конец">
           <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
@@ -133,7 +133,7 @@ export default {
       userId: null, // примерный ID пользователя
       editMode: false,
       isModalVisible: false,
-      base_url: "https://73c3-188-243-183-39.ngrok-free.app"
+      base_url: "https://e270-188-243-183-39.ngrok-free.app"
     };
   },
   computed: {
