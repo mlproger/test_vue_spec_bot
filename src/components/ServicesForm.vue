@@ -1,7 +1,5 @@
 <template>
   <div class="services-form">
-    <h2>Информация об услугах</h2>
-
     <!-- Режим просмотра данных -->
     <div v-if="!editMode">
       <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
@@ -32,56 +30,69 @@
         </a-list-item>
       </a-list>
 
-      <a-button type="primary" @click="toggleEditMode" style="margin-top: 20px;">
-        Редактировать информацию
-      </a-button>
+      <div class="button-container">
+        <a-button type="primary" @click="toggleEditMode">
+          Редактировать информацию
+        </a-button>
+      </div>
     </div>
 
     <!-- Режим редактирования данных -->
     <div v-else>
-    <a-form layout="vertical">
-      <a-form-item label="Категория услуги">
-        <a-select v-model="selectedCategory" placeholder="Выберите категорию" @change="onCategoryChange">
-          <a-select-option v-for="category in categories" :key="category" :value="category">
-            {{ category }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
+      <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
+      <a-list bordered>
+        <a-list-item v-for="(service, index) in services" :key="index">
+          <div style="flex-grow: 1;">
+            {{ service.category }} - {{ service.cost }} ₽
+          </div>
+          <a-button type="link" @click="removeService(index)" style="color: red;">
+            Удалить
+          </a-button>
+        </a-list-item>
+      </a-list>
 
-      <a-form-item label="Стоимость">
-        <a-input-number
-          v-model="cost"
-          placeholder="Введите стоимость"
-          style="width: 100%;"
-          :min="0"
-          :formatter="value => `${value}`"
-          @change="onCostChange"
-        />
-      </a-form-item>
-
-      <a-button type="primary" @click="addService" style="margin-top: 10px;">
-        Добавить услугу
-      </a-button>
-    </a-form>
-    <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
-    <a-list bordered>
-      <a-list-item v-for="(service, index) in services" :key="index">
-        <div style="flex-grow: 1;">
-          {{ service.category }} - {{ service.cost }} ₽
-        </div>
-        <a-button type="link" @click="removeService(index)" style="color: red;">
-          Удалить
+      <div class="button-container">
+        <a-button type="primary" @click="showModal" class="mb-4">
+          Создать услугу
         </a-button>
-      </a-list-item>
-    </a-list>
+
+        <!-- Модальное окно для добавления услуги -->
+        <a-modal
+          v-model:visible="isModalVisible"
+          title="Создание услуги"
+          @ok="addService"
+          @cancel="handleCancel"
+        >
+          <a-form layout="vertical">
+            <a-form-item label="Категория услуги">
+              <a-select v-model="selectedCategory" placeholder="Выберите категорию" @change="onCategoryChange">
+                <a-select-option v-for="category in categories" :key="category" :value="category">
+                  {{ category }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+
+            <a-form-item label="Стоимость">
+              <a-input-number
+                v-model="cost"
+                placeholder="Введите стоимость"
+                style="width: 100%;"
+                :min="0"
+                :formatter="value => `${value}`"
+                @change="onCostChange"
+              />
+            </a-form-item>
+          </a-form>
+        </a-modal>
+      </div>
 
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <a-time-picker v-model="startTime" @change="onStartTimeChange" format="HH:mm" />
+          <a-time-picker v-model="startTime" @change="onStartTimeChange" format="HH:mm" placeholder=""/>
         </a-form-item>
         <a-form-item label="Конец">
-          <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" />
+          <a-time-picker v-model="endTime" @change="onEndTimeChange" format="HH:mm" placeholder=""/>
         </a-form-item>
         <a-form-item label="Рабочие дни">
           <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
@@ -121,6 +132,8 @@ export default {
       services: [],
       userId: null, // примерный ID пользователя
       editMode: false,
+      isModalVisible: false,
+      base_url: "https://73c3-188-243-183-39.ngrok-free.app"
     };
   },
   computed: {
@@ -146,8 +159,15 @@ export default {
     document.head.appendChild(script);
   },
   methods: {
+    showModal() {
+      this.isModalVisible = true;
+    },
+    handleCancel() {
+      this.isModalVisible = false;
+      this.resetForm();
+    },
     loadInitialData() {
-      axios.get(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
+      axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { 'headers': { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
           if (data.tasks.length === 0){
@@ -190,6 +210,8 @@ export default {
           category: this.selectedCategory,
           cost: this.cost,
         });
+
+        this.isModalVisible = false;
 
         // Сброс формы после добавления услуги
         this.resetForm();
@@ -238,12 +260,12 @@ export default {
       console.log(dataToSend);
 
       try {
-        await axios.get(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}/`);
-        await axios.put(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/${this.userId}`, dataToSend);
+        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
         alert('Информация успешно сохранена');
         this.toggleEditMode(); // Вернуться в режим просмотра после сохранения
       } catch (error) {
-        await axios.post(`https://c1a1-188-243-183-39.ngrok-free.app/api/v1/orders/`, dataToSend);
+        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
         this.editMode = 0;
         console.error('Информация успешно сохранена', error);
 
@@ -262,6 +284,13 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 16px;
 }
 h2, h3 {
   color: #333;
