@@ -171,7 +171,7 @@ export default {
       services: [],
       userId: null,
       editMode: false,
-      base_url: "https://5a73-188-243-183-39.ngrok-free.app",
+      base_url: "https://73c3-188-243-183-39.ngrok-free.app",
     };
   },
   computed: {
@@ -272,9 +272,36 @@ export default {
       this.workingDays = value;
     },
     saveInfo() {
-      // Сохранение данных логики
-      // ...
       this.editMode = false;
+      if (!this.startTime  !this.endTime  this.workingDays.length === 0) {
+        alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
+        return;
+      }
+
+      const dataToSend = {
+        tasks: this.services,
+        time_start: this.startTime,
+        time_end: this.endTime,
+        work_days: this.workingDays,
+        user_id: this.userId.toString(),
+      };
+
+      this.startTime = this.formatTime(dataToSend.time_start);
+      this.endTime = this.formatTime(dataToSend.time_end);
+
+      console.log(dataToSend);
+
+      try {
+        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
+        alert('Информация успешно сохранена');
+        this.toggleEditMode(); 
+      } catch (error) {
+        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+        this.editMode = 0;
+        console.error('Информация успешно сохранена', error);
+
+      }
     },
   },
 };
