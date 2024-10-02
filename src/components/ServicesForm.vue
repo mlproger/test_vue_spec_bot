@@ -271,9 +271,9 @@ export default {
     onWorkingDaysChange(value) {
       this.workingDays = value;
     },
-    saveInfo() {
-      this.editMode = false;
-      if (!this.startTime  !this.endTime  this.workingDays.length === 0) {
+    async saveInfo() {
+
+      if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
         alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
         return;
       }
