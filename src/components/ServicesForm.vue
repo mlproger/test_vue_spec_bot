@@ -31,7 +31,7 @@
       </a-list>
 
       <div class="button-container">
-        <a-button type="primary" @click="toggleEditMode">
+        <a-button type="primary" size="large" @click="toggleEditMode">
           Редактировать информацию
         </a-button>
       </div>
@@ -45,14 +45,14 @@
           <div style="flex-grow: 1;">
             {{ service.category }} - {{ service.cost }} ₽
           </div>
-          <a-button type="link" @click="removeService(index)" style="color: red;">
+          <a-button type="link" size="large" @click="removeService(index)" style="color: red;">
             Удалить
           </a-button>
         </a-list-item>
       </a-list>
 
       <div class="button-container">
-        <a-button type="primary" @click="showServiceModal" class="mb-4">
+        <a-button type="primary" size="large" @click="showServiceModal" class="mb-4">
           Создать услугу
         </a-button>
 
@@ -82,6 +82,11 @@
               />
             </a-form-item>
           </a-form>
+          <template #footer>
+            <a-button type="primary" size="large" @click="addService" style="width: 100%;">
+              Создать
+            </a-button>
+          </template>
         </a-modal>
       </div>
 
@@ -89,7 +94,7 @@
       <a-form layout="vertical">
         <a-form-item label="Начало">
           <div style="display: flex; align-items: center;">
-            <a-button type="primary" @click="openStartTimePicker">
+            <a-button type="primary" size="large" @click="openStartTimePicker">
               {{ startTime ? 'Изменить время' : 'Добавить время' }}
             </a-button>
             <span style="margin-left: 10px;">{{ formattedStartTime }}</span>
@@ -110,7 +115,7 @@
         </a-form-item>
         <a-form-item label="Конец">
           <div style="display: flex; align-items: center;">
-            <a-button type="primary" @click="openEndTimePicker">
+            <a-button type="primary" size="large" @click="openEndTimePicker">
               {{ endTime ? 'Изменить время' : 'Добавить время' }}
             </a-button>
             <span style="margin-left: 10px;">{{ formattedEndTime }}</span>
@@ -140,12 +145,14 @@
         </a-form-item>
       </a-form>
 
-      <a-button type="primary" @click="saveInfo" style="margin-top: 20px;">
-        Сохранить информацию
-      </a-button>
-      <a-button @click="toggleEditMode" style="margin-top: 20px; margin-left: 10px;">
-        Отмена
-      </a-button>
+      <div class="button-container" style="flex-direction: column;">
+        <a-button type="primary" size="large" @click="saveInfo" style="width: 100%; margin-bottom: 10px;">
+          Сохранить информацию
+        </a-button>
+        <a-button size="large" @click="toggleEditMode" style="width: 100%;">
+          Отмена
+        </a-button>
+      </div>
     </div>
   </div>
 </template>
@@ -196,7 +203,6 @@ export default {
   },
   methods: {
     showServiceModal() {
-    this.resetForm();
       this.isServiceModalVisible = true;
     },
     openStartTimePicker() {
@@ -211,7 +217,6 @@ export default {
     },
     handleServiceModalCancel() {
       this.isServiceModalVisible = false;
-      this.resetForm();
     },
     loadInitialData() {
       axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } })
@@ -247,15 +252,17 @@ export default {
     resetForm() {
       this.selectedCategory = null;
       this.cost = null;
+      console.log("!!!!!");
     },
     removeService(index) {
       this.services.splice(index, 1);
       this.resetForm();
+      console.log('After delete service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
     },
     addService() {
+        console.log('Before adding service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
       if (this.selectedCategory && this.cost) {
         this.services.push({ category: this.selectedCategory, cost: this.cost });
-        this.resetForm();
         this.isServiceModalVisible = false;
         this.selectedCategory = null;
         this.cost = null;
@@ -279,7 +286,6 @@ export default {
       this.selectedCategory = value;
     },
     async saveInfo() {
-
       if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
         alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
         return;
@@ -307,7 +313,6 @@ export default {
         await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
         this.editMode = 0;
         console.error('Информация успешно сохранена', error);
-
       }
     },
   },
@@ -315,6 +320,8 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
 .services-form {
   max-width: 600px;
   margin: 0 auto;
@@ -323,6 +330,7 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif; /* Применяем шрифт Roboto */
 }
 .button-container {
   display: flex;
