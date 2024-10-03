@@ -254,8 +254,10 @@ export default {
     addService() {
       if (this.selectedCategory && this.cost) {
         this.services.push({ category: this.selectedCategory, cost: this.cost });
-        this.resetForm();
+        // this.resetForm();
         this.isServiceModalVisible = false;
+        this.selectedCategory = null;
+        this.cost = null;
       } else {
         alert('Пожалуйста, заполните все поля.');
       }
