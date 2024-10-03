@@ -94,44 +94,58 @@
       <a-form layout="vertical">
         <a-form-item label="Начало">
           <div style="display: flex; align-items: center;">
-            <a-button type="primary" size="large" @click="openStartTimePicker">
+            <a-button type="primary" size="large" @click="openStartTimeSelector">
               {{ startTime ? 'Изменить время' : 'Добавить время' }}
             </a-button>
             <span style="margin-left: 10px;">{{ formattedStartTime }}</span>
           </div>
           <a-modal
-            v-model:visible="isStartTimePickerVisible"
+            v-model:visible="isStartTimeSelectorVisible"
             title="Выберите время для начала"
-            @cancel="closeTimePicker"
-            @ok="closeTimePicker"
+            @cancel="closeTimeSelector"
+            @ok="closeTimeSelector"
           >
-            <a-time-picker
-              ref="startTimePicker"
+            <a-select
               v-model="startTime"
               @change="onStartTimeChange"
-              format="HH:mm"
-            />
+              placeholder="Выберите время"
+            >
+              <a-select-option
+                v-for="time in timeOptions"
+                :key="time"
+                :value="time"
+              >
+                {{ time }}
+              </a-select-option>
+            </a-select>
           </a-modal>
         </a-form-item>
         <a-form-item label="Конец">
           <div style="display: flex; align-items: center;">
-            <a-button type="primary" size="large" @click="openEndTimePicker">
+            <a-button type="primary" size="large" @click="openEndTimeSelector">
               {{ endTime ? 'Изменить время' : 'Добавить время' }}
             </a-button>
             <span style="margin-left: 10px;">{{ formattedEndTime }}</span>
           </div>
           <a-modal
-            v-model:visible="isEndTimePickerVisible"
+            v-model:visible="isEndTimeSelectorVisible"
             title="Выберите время для конца"
-            @cancel="closeTimePicker"
-            @ok="closeTimePicker"
+            @cancel="closeTimeSelector"
+            @ok="closeTimeSelector"
           >
-            <a-time-picker
-              ref="endTimePicker"
+            <a-select
               v-model="endTime"
               @change="onEndTimeChange"
-              format="HH:mm"
-            />
+              placeholder="Выберите время"
+            >
+              <a-select-option
+                v-for="time in timeOptions"
+                :key="time"
+                :value="time"
+              >
+                {{ time }}
+              </a-select-option>
+            </a-select>
           </a-modal>
         </a-form-item>
         <a-form-item label="Рабочие дни">
@@ -170,8 +184,8 @@ export default {
       startTime: null,
       endTime: null,
       isServiceModalVisible: false,
-      isStartTimePickerVisible: false,
-      isEndTimePickerVisible: false,
+      isStartTimeSelectorVisible: false,
+      isEndTimeSelectorVisible: false,
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
@@ -182,10 +196,19 @@ export default {
   },
   computed: {
     formattedStartTime() {
-      return this.startTime ? this.formatTime(this.startTime) : '';
+      return this.startTime ? this.startTime : '';
     },
     formattedEndTime() {
-      return this.endTime ? this.formatTime(this.endTime) : '';
+      return this.endTime ? this.endTime : '';
+    },
+    timeOptions() {
+      const options = [];
+      for (let hour = 0; hour < 24; hour++) {
+        const formattedHour = hour < 10 ? `0${hour}` : hour;
+        options.push(`${formattedHour}:00`);
+        options.push(`${formattedHour}:30`);
+      }
+      return options;
     },
   },
   mounted() {
@@ -205,15 +228,15 @@ export default {
     showServiceModal() {
       this.isServiceModalVisible = true;
     },
-    openStartTimePicker() {
-      this.isStartTimePickerVisible = true;
+    openStartTimeSelector() {
+      this.isStartTimeSelectorVisible = true;
     },
-    openEndTimePicker() {
-      this.isEndTimePickerVisible = true;
+    openEndTimeSelector() {
+      this.isEndTimeSelectorVisible = true;
     },
-    closeTimePicker() {
-      this.isStartTimePickerVisible = false;
-      this.isEndTimePickerVisible = false;
+    closeTimeSelector() {
+      this.isStartTimeSelectorVisible = false;
+      this.isEndTimeSelectorVisible = false;
     },
     handleServiceModalCancel() {
       this.isServiceModalVisible = false;
@@ -236,15 +259,15 @@ export default {
         });
     },
     formatTime(isoString) {
-        if (!isoString) return ''; // Если нет значения, возвращаем пустую строку
-        const date = new Date(isoString);
-        
-        // Проверяем, действительно ли дата корректная
-        if (isNaN(date.getTime())) return ''; // Если дата некорректная, возвращаем пустую строку
+      if (!isoString) return ''; // Если нет значения, возвращаем пустую строку
+      const date = new Date(isoString);
+      
+      // Проверяем, действительно ли дата корректная
+      if (isNaN(date.getTime())) return ''; // Если дата некорректная, возвращаем пустую строк
 
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${hours}:${minutes}`;
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
     },
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -260,7 +283,7 @@ export default {
       console.log('After delete service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
     },
     addService() {
-        console.log('Before adding service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
+      console.log('Before adding service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
       if (this.selectedCategory && this.cost) {
         this.services.push({ category: this.selectedCategory, cost: this.cost });
         this.isServiceModalVisible = false;
