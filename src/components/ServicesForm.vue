@@ -39,7 +39,7 @@
 
     <!-- Режим редактирования данных -->
     <div v-else>
-      <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
+      <h3 style="margin-top: 20px;">Добавленные услуги1:</h3>
       <a-list bordered>
         <a-list-item v-for="(service, index) in services" :key="index">
           <div style="flex-grow: 1;">
