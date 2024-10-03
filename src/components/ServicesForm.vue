@@ -61,7 +61,6 @@
           v-model:visible="isServiceModalVisible"
           title="Создание услуги"
           @ok="addService"
-          @cancel="handleServiceModalCancel"
         >
           <a-form layout="vertical">
             <a-form-item label="Категория услуги">
@@ -244,19 +243,20 @@ export default {
     toggleEditMode() {
       this.editMode = !this.editMode;
     },
-    removeService(index) {
-      this.services.splice(index, 1);
-      this.selectedCategory = null;
-      this.cost = null;
-    },
     resetForm() {
       this.selectedCategory = null;
       this.cost = null;
     },
+    removeService(index) {
+      this.services.splice(index, 1);
+      this.selectedCategory = null;
+      this.cost = null;
+      this.resetForm();
+    },
     addService() {
       if (this.selectedCategory && this.cost) {
         this.services.push({ category: this.selectedCategory, cost: this.cost });
-        // this.resetForm();
+        this.resetForm();
         this.isServiceModalVisible = false;
         this.selectedCategory = null;
         this.cost = null;
