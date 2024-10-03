@@ -246,6 +246,8 @@ export default {
     },
     removeService(index) {
       this.services.splice(index, 1);
+      this.selectedCategory = null;
+      this.cost = null;
     },
     resetForm() {
       this.selectedCategory = null;
