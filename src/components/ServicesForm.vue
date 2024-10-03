@@ -249,8 +249,8 @@ export default {
             this.editMode = true;
           } else {
             this.services = data.tasks || [];
-            this.startTime = data.time_start ? this.formatTime(data.time_start) : null;
-            this.endTime = data.time_end ? this.formatTime(data.time_end) : null;
+            this.startTime = data.time_start;
+            this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
           }
         })
