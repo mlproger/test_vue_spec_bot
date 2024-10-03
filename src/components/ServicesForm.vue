@@ -39,7 +39,7 @@
 
     <!-- Режим редактирования данных -->
     <div v-else>
-      <h3 style="margin-top: 20px;">Добавленные услуги1:</h3>
+      <h3 style="margin-top: 20px;">Добавленные услуги:</h3>
       <a-list bordered>
         <a-list-item v-for="(service, index) in services" :key="index">
           <div style="flex-grow: 1;">
@@ -196,6 +196,7 @@ export default {
   },
   methods: {
     showServiceModal() {
+    this.resetForm();
       this.isServiceModalVisible = true;
     },
     openStartTimePicker() {
@@ -249,8 +250,6 @@ export default {
     },
     removeService(index) {
       this.services.splice(index, 1);
-      this.selectedCategory = null;
-      this.cost = null;
       this.resetForm();
     },
     addService() {
