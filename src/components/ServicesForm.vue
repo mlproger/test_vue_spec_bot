@@ -267,7 +267,7 @@ export default {
         time_end: this.endTime,
         work_days: this.workingDays,
       };
-
+      alert(dataToSend);
       try {
         await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
         await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
@@ -278,6 +278,7 @@ export default {
         this.editMode = 0;
         console.error('Информация успешно сохранена', error);
       }
+      alert("End");
     },
   },
 };
