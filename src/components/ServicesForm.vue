@@ -268,7 +268,6 @@ export default {
         work_days: this.workingDays,
         user_id: this.userId.toString(),
       };
-      alert(dataToSend);
       try {
         await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
         await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
