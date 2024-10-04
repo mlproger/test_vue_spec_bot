@@ -53,7 +53,7 @@
 
       <div class="button-container">
         <a-button type="primary" size="large" @click="showServiceModal" class="mb-4">
-          Создать услугу
+          Добавить услугу
         </a-button>
 
         <!-- Модальное окно для добавления услуги -->
@@ -84,7 +84,7 @@
           </a-form>
           <template #footer>
             <a-button type="primary" size="large" @click="addService" style="width: 100%;">
-              Создать
+              Добавить
             </a-button>
           </template>
         </a-modal>
@@ -93,60 +93,26 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало">
-          <div style="display: flex; align-items: center;">
-            <a-button type="primary" size="large" @click="openStartTimeSelector">
-              {{ startTime ? 'Изменить время' : 'Добавить время' }}
-            </a-button>
-            <span style="margin-left: 10px;">{{ formattedStartTime }}</span>
-          </div>
-          <a-modal
-            v-model:visible="isStartTimeSelectorVisible"
-            title="Выберите время для начала"
-            @cancel="closeTimeSelector"
-            @ok="closeTimeSelector"
-          >
-            <a-select
-              v-model="startTime"
-              @change="onStartTimeChange"
-              placeholder="Выберите время"
+          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время начала">
+            <a-select-option
+              v-for="time in timeOptions"
+              :key="time"
+              :value="time"
             >
-              <a-select-option
-                v-for="time in timeOptions"
-                :key="time"
-                :value="time"
-              >
-                {{ time }}
-              </a-select-option>
-            </a-select>
-          </a-modal>
+              {{ time }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="Конец">
-          <div style="display: flex; align-items: center;">
-            <a-button type="primary" size="large" @click="openEndTimeSelector">
-              {{ endTime ? 'Изменить время' : 'Добавить время' }}
-            </a-button>
-            <span style="margin-left: 10px;">{{ formattedEndTime }}</span>
-          </div>
-          <a-modal
-            v-model:visible="isEndTimeSelectorVisible"
-            title="Выберите время для конца"
-            @cancel="closeTimeSelector"
-            @ok="closeTimeSelector"
-          >
-            <a-select
-              v-model="endTime"
-              @change="onEndTimeChange"
-              placeholder="Выберите время"
+          <a-select v-model="endTime" @change="onEndTimeChange" placeholder="Выберите время конца">
+            <a-select-option
+              v-for="time in timeOptionsReverse"
+              :key="time"
+              :value="time"
             >
-              <a-select-option
-                v-for="time in timeOptions"
-                :key="time"
-                :value="time"
-              >
-                {{ time }}
-              </a-select-option>
-            </a-select>
-          </a-modal>
+              {{ time }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="Рабочие дни">
           <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
@@ -184,8 +150,6 @@ export default {
       startTime: null,
       endTime: null,
       isServiceModalVisible: false,
-      isStartTimeSelectorVisible: false,
-      isEndTimeSelectorVisible: false,
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
       services: [],
@@ -206,9 +170,16 @@ export default {
       for (let hour = 0; hour < 24; hour++) {
         const formattedHour = hour < 10 ? `0${hour}` : hour;
         options.push(`${formattedHour}:00`);
-        options.push(`${formattedHour}:30`);
       }
       return options;
+    },
+    timeOptionsReverse() {
+      const options = [];
+      for (let hour = 0; hour < 24; hour++) {
+        const formattedHour = hour < 10 ? `0${hour}` : hour;
+        options.push(`${formattedHour}:00`);
+      }
+      return options.reverse();
     },
   },
   mounted() {
@@ -228,19 +199,6 @@ export default {
     showServiceModal() {
       this.isServiceModalVisible = true;
     },
-    openStartTimeSelector() {
-      this.isStartTimeSelectorVisible = true;
-    },
-    openEndTimeSelector() {
-      this.isEndTimeSelectorVisible = true;
-    },
-    closeTimeSelector() {
-      this.isStartTimeSelectorVisible = false;
-      this.isEndTimeSelectorVisible = false;
-    },
-    handleServiceModalCancel() {
-      this.isServiceModalVisible = false;
-    },
     loadInitialData() {
       axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
@@ -257,17 +215,6 @@ export default {
         .catch(() => {
           this.editMode = true;
         });
-    },
-    formatTime(isoString) {
-      if (!isoString) return ''; // Если нет значения, возвращаем пустую строку
-      const date = new Date(isoString);
-      
-      // Проверяем, действительно ли дата корректная
-      if (isNaN(date.getTime())) return ''; // Если дата некорректная, возвращаем пустую строк
-
-      const hours = date.getHours().toString().padStart(2, '0');
-      const minutes = date.getMinutes().toString().padStart(2, '0');
-      return `${hours}:${minutes}`;
     },
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -319,32 +266,22 @@ export default {
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
-        user_id: this.userId.toString(),
       };
 
-      this.startTime = this.formatTime(dataToSend.time_start);
-      this.endTime = this.formatTime(dataToSend.time_end);
-
-      console.log(dataToSend);
-
       try {
-        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
-        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
-        alert('Информация успешно сохранена');
-        this.toggleEditMode(); 
+        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}/`, dataToSend, {
+          headers: { 'ngrok-skip-browser-warning': 'oke' },
+        });
+        this.editMode = false;
       } catch (error) {
-        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
-        this.editMode = 0;
-        console.error('Информация успешно сохранена', error);
+        console.error('Ошибка при сохранении данных:', error);
+        alert('Ошибка при сохранении данных. Пожалуйста, попробуйте еще раз.');
       }
     },
   },
 };
 </script>
-
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
 .services-form {
   max-width: 600px;
   margin: 0 auto;
@@ -353,14 +290,6 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Roboto', sans-serif; /* Применяем шрифт Roboto */
-}
-.button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 16px;
 }
 h2, h3 {
   color: #333;
