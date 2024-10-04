@@ -15,12 +15,12 @@
       <a-list bordered>
         <a-list-item>
           <div style="flex-grow: 1;">
-            Начало: {{ formattedStartTime }}
+            Начало рабочего дня: {{ formattedStartTime }}
           </div>
         </a-list-item>
         <a-list-item>
           <div style="flex-grow: 1;">
-            Конец: {{ formattedEndTime }}
+            Конец рабочего дня: {{ formattedEndTime }}
           </div>
         </a-list-item>
         <a-list-item>
@@ -283,6 +283,7 @@ export default {
 };
 </script>
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 .services-form {
   max-width: 600px;
   margin: 0 auto;
@@ -291,6 +292,14 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif; /* Применяем шрифт Roboto */
+}
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 16px;
 }
 h2, h3 {
   color: #333;
