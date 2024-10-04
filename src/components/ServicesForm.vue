@@ -275,7 +275,7 @@ export default {
         this.editMode = false;
       } catch (error) {
         console.error('Ошибка при сохранении данных:', error);
-        alert('Ошибка при сохранении данных. Пожалуйста, попробуйте еще раз.');
+        alert(error);
       }
     },
   },
