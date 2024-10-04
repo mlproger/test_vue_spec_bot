@@ -94,7 +94,7 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало рабочего дня:">
-          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время начала" class="custom-select">
+          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время" class="custom-select">
             <a-select-option
               v-for="time in timeOptions"
               :key="time"
@@ -105,7 +105,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="Конец рабочего дня:">
-          <a-select v-model="endTime" @change="onEndTimeChange" placeholder="Выберите время конца" class="custom-select">
+          <a-select v-model="endTime" @change="onEndTimeChange" placeholder="Выберите время" class="custom-select">
             <a-select-option
               v-for="time in timeOptionsReverse"
               :key="time"
