@@ -1,4 +1,3 @@
-
 <template>
   <div class="services-form">
     <!-- Режим просмотра данных -->
