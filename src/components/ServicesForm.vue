@@ -269,13 +269,14 @@ export default {
       };
 
       try {
-        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}/`, dataToSend, {
-          headers: { 'ngrok-skip-browser-warning': 'oke' },
-        });
-        this.editMode = false;
+        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
+        alert('Информация успешно сохранена');
+        this.toggleEditMode(); 
       } catch (error) {
-        console.error('Ошибка при сохранении данных:', error);
-        alert(error);
+        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+        this.editMode = 0;
+        console.error('Информация успешно сохранена', error);
       }
     },
   },
