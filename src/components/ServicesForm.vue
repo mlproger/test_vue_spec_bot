@@ -65,7 +65,7 @@
         >
           <a-form layout="vertical">
             <a-form-item label="Категория услуги">
-              <a-select v-model="selectedCategory" placeholder="Выберите категорию" @change="onCategoryChange">
+              <a-select v-model="selectedCategory" placeholder="Выберите категорию" @change="onCategoryChange" class="custom-select">
                 <a-select-option v-for="category in categories" :key="category" :value="category">
                   {{ category }}
                 </a-select-option>
@@ -76,6 +76,7 @@
               <a-input-number
                 v-model="cost"
                 placeholder="Введите стоимость"
+                class="centered-input"
                 style="width: 100%;"
                 :min="0"
                 :formatter="value => `${value}`"
@@ -293,16 +294,27 @@ export default {
   border-radius: 8px;
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Roboto', sans-serif; /* Применяем шрифт Roboto */
+  font-family: 'Roboto', sans-serif; 
+}
+
+.centered-input {
+  height: 50px !important; 
+
+} 
+
+.centered-input .ant-input-number-input {
+  text-align: center;
 }
 ::v-deep .custom-select .ant-select-selector {
-  height: 50px !important; /* Увеличиваем высоту поля ввода */
+  height: 50px !important; 
   display: flex;
   align-items: center; 
 }
 ::v-deep .custom-select .ant-select-selection-item {
   line-height: 50px; 
 }
+
+
 .button-container {
   display: flex;
   justify-content: center;
