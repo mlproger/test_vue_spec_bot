@@ -1,3 +1,4 @@
+
 <template>
   <div class="services-form">
     <!-- Режим просмотра данных -->
@@ -93,7 +94,7 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало рабочего дня:">
-          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время начала" style="width: 200px">
+          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время начала" class="custom-select">
             <a-select-option
               v-for="time in timeOptions"
               :key="time"
@@ -104,7 +105,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="Конец рабочего дня:">
-          <a-select v-model="endTime" @change="onEndTimeChange" placeholder="Выберите время конца" style="width: 200px">
+          <a-select v-model="endTime" @change="onEndTimeChange" placeholder="Выберите время конца" class="custom-select">
             <a-select-option
               v-for="time in timeOptionsReverse"
               :key="time"
@@ -293,6 +294,14 @@ export default {
   background-color: #fafafa;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   font-family: 'Roboto', sans-serif; /* Применяем шрифт Roboto */
+}
+::v-deep .custom-select .ant-select-selector {
+  height: 50px !important; /* Увеличиваем высоту поля ввода */
+  display: flex;
+  align-items: center; 
+}
+::v-deep .custom-select .ant-select-selection-item {
+  line-height: 50px; 
 }
 .button-container {
   display: flex;
