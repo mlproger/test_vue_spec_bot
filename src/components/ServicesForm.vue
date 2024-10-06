@@ -124,6 +124,10 @@
             </a-row>
           </a-checkbox-group>
         </a-form-item>
+        <a-select v-model="orderType" @change="handleChange" placeholder="Тип заказа" style="width: 200px">
+          <a-select-option :value="true">С выездом</a-select-option>
+          <a-select-option :value="false">Без выезда</a-select-option>
+          </a-select>
       </a-form>
 
       <div class="button-container" style="flex-direction: column;">
@@ -157,6 +161,7 @@ export default {
       userId: null,
       editMode: false,
       base_url: "https://204a-88-201-168-78.ngrok-free.app",
+      orderType: null
     };
   },
   computed: {
@@ -199,6 +204,9 @@ export default {
   methods: {
     showServiceModal() {
       this.isServiceModalVisible = true;
+    },
+    handleChange(value) {
+      this.orderType = value;
     },
     loadInitialData() {
       axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } })
@@ -264,7 +272,7 @@ export default {
         time_start: this.startTime,
         time_end: this.endTime,
         work_days: this.workingDays,
-        out: true,
+        out: this.orderType,
         user_id: this.userId.toString(),
       };
 
