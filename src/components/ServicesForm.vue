@@ -33,6 +33,15 @@
             Тип заказа: {{ orderType }}
           </div>
         </a-list-item>
+        <a-list-item>
+          <div>
+            <template v-if="selectedCity">
+              <div class="city-info">
+                <span>Город: {{ selectedCity }}</span>
+              </div>
+            </template>
+          </div>
+        </a-list-item>
       </a-list>
 
       <div class="button-container">
@@ -129,10 +138,51 @@
             </a-row>
           </a-checkbox-group>
         </a-form-item>
+        
         <a-select v-model="orderType" @change="handleChange" placeholder="Тип заказа" style="width: 200px">
           <a-select-option :value="true">С выездом</a-select-option>
           <a-select-option :value="false">Без выезда</a-select-option>
           </a-select>
+        <h3 style="margin-top: 20px; font-weight: bold;">Город</h3>
+        <a-form-item>
+          <template v-if="selectedCity">
+            <div class="city-info">
+              <span>{{ selectedCity }}</span>
+              <a-button type="link" @click="openCitySelector" class="change-city-btn">Изменить</a-button>
+            </div>
+          </template>
+          <template v-else>
+            <a-button @click="openCitySelector">Выбрать город</a-button>
+          </template>
+        </a-form-item>
+
+        <a-modal
+          v-model:visible="isModalVisible"
+          title="Выберите город"
+          @ok="handleOk"
+          width="600px"
+          ok-text="Сохранить"
+          :cancel-button-props="{ style: { display: 'none' } }"
+        >
+          <a-select
+            v-model:value="selectedCity"
+            show-search
+            filter-option="false"
+            placeholder="Введите название города"
+            style="width: 100%"
+            @search="onSearch"
+            @popupScroll="onScroll"
+            :loading="loading"
+          >
+            <a-select-option
+              v-for="city in cities"
+              :key="city.id"
+              :value="city.name"
+            >
+              {{ city.name }}
+            </a-select-option>
+          </a-select>
+        </a-modal>
       </a-form>
 
       <div class="button-container" style="flex-direction: column;">
@@ -146,6 +196,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -165,8 +216,14 @@ export default {
       services: [],
       userId: null,
       editMode: false,
-      base_url: "https://204a-88-201-168-78.ngrok-free.app",
-      orderType: null
+      base_url: "https://cafe-188-243-183-61.ngrok-free.app",
+      orderType: null,
+      isModalVisible: false,
+      cities: [],
+      selectedCity: null,
+      loading: false,
+      page: 1,
+      searchTerm: '',
     };
   },
   computed: {
@@ -194,6 +251,7 @@ export default {
     },
   },
   mounted() {
+    this.loadInitialData();
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-web-app.js';
     script.onload = () => {
@@ -207,11 +265,58 @@ export default {
     document.head.appendChild(script);
   },
   methods: {
+    async openCitySelector() {
+      this.isModalVisible = true;
+      this.loadCities();
+    },
+    handleOk() {
+      this.isModalVisible = false;
+      console.log('Selected city:', this.selectedCity);
+    },
+    handleCancel() {
+      this.isModalVisible = false;
+    },
     showServiceModal() {
       this.isServiceModalVisible = true;
     },
     handleChange(value) {
       this.orderType = value;
+    },
+    async loadCities(reset = false) {
+      if (reset) {
+        this.cities = [];
+        this.page = 1;
+      }
+      this.loading = true;
+      try {
+        const response = await axios.get(
+          'https://raw.githubusercontent.com/pensnarik/russian-cities/master/russian-cities.json'
+        );
+        const citiesList = response.data;
+
+        const filteredCities = citiesList
+          .filter((city) =>
+            city.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+          )
+          .slice((this.page - 1) * 20, this.page * 20);
+
+        this.cities.push(...filteredCities);
+        this.page += 1;
+      } catch (error) {
+        console.error('Error loading cities:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    onSearch(value) {
+      this.searchTerm = value;
+      this.loadCities(true);
+    },
+    onScroll(event) {
+      const { target } = event;
+      if (target.scrollTop + target.offsetHeight >= target.scrollHeight) {
+        this.loadCities();
+      }
     },
     loadInitialData() {
       axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } })
@@ -229,6 +334,12 @@ export default {
         })
         .catch(() => {
           this.editMode = true;
+        });
+        axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=7078824389`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
+        .then(response => {
+          const data = response.data;
+          this.selectedCity = data.data[0].city;
+          console.log(this.selectedCity);
         });
     },
     toggleEditMode() {
@@ -286,6 +397,7 @@ export default {
         const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } });
         if (response.status === 200) {
           await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend, { headers: { 'ngrok-skip-browser-warning': "oke" } });
+          await axios.put(`${this.base_url}/api/v1/tg-users/${this.userId}`, {"city": this.selectedCity}, { headers: { 'ngrok-skip-browser-warning': "oke" } });
           alert("Информация обновлена");
           this.toggleEditMode();
         }
@@ -293,6 +405,7 @@ export default {
 
         if (error.response && error.response.status !== 200) {
           await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend, { headers: { 'ngrok-skip-browser-warning': "oke" } });
+          await axios.put(`${this.base_url}/api/v1/tg-users/${this.userId}`, {"city": this.selectedCity}, { headers: { 'ngrok-skip-browser-warning': "oke" } });
           alert("Информация сохранена");
           this.toggleEditMode();
         } 
@@ -330,6 +443,8 @@ export default {
 ::v-deep .custom-select .ant-select-selection-item {
   line-height: 50px; 
 }
+
+
 
 
 .button-container {
