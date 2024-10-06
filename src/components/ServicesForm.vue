@@ -329,16 +329,15 @@ export default {
             this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
             this.orderType = data.out === true ? "С выездом" : data.out === false ? "Без выезда" : "";
+            axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=${this.userId}`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
+        .then(response => {
+          const data = response.data;
+          this.selectedCity = data.data[0].city;
+        });
           }
         })
         .catch(() => {
           this.editMode = true;
-        });
-        axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=${this.userId}`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
-        .then(response => {
-          const data = response.data;
-          this.selectedCity = data.data[0].city;
-          console.log(this.selectedCity);
         });
     },
     toggleEditMode() {
