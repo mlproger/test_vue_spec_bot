@@ -108,7 +108,7 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало рабочего дня:">
-          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время" class="custom-select">
+          <a-select v-model="startTime" @change="onStartTimeChange" :placeholder="this.formattedStartTime || 'Выберите время'" class="custom-select">
             <a-select-option
               v-for="time in timeOptions"
               :key="time"
@@ -119,7 +119,7 @@
           </a-select>
         </a-form-item>
         <a-form-item label="Конец рабочего дня:">
-          <a-select v-model="endTime" @change="onEndTimeChange" placeholder="Выберите время" class="custom-select">
+          <a-select v-model="endTime" @change="onEndTimeChange" :placeholder="this.formattedEndTime || 'Выберите время'" class="custom-select">
             <a-select-option
               v-for="time in timeOptionsReverse"
               :key="time"
@@ -130,16 +130,19 @@
           </a-select>
         </a-form-item>
         <a-form-item label="Рабочие дни">
-          <a-checkbox-group v-model="workingDays" @change="onWorkingDaysChange">
-            <a-row>
-              <a-col v-for="day in days" :key="day" span="8">
-                <a-checkbox :value="day">{{ day }}</a-checkbox>
-              </a-col>
-            </a-row>
-          </a-checkbox-group>
+          <div v-for="(day, index) in days" :key="index" style="display: inline-block; margin-right: 10px;">
+            <label>
+              <input
+                type="checkbox"
+                :value="day"
+                v-model="workingDays"
+              />
+              {{ day }}
+            </label>
+          </div>
         </a-form-item>
         
-        <a-select v-model="orderType" @change="handleChange" placeholder="Тип заказа" style="width: 200px">
+        <a-select v-model="orderType" @change="handleChange" :placeholder="this.orderType || 'Тип заказа'" style="width: 200px">
           <a-select-option :value="true">С выездом</a-select-option>
           <a-select-option :value="false">Без выезда</a-select-option>
           </a-select>
@@ -213,6 +216,7 @@ export default {
       isServiceModalVisible: false,
       days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
       workingDays: [],
+      workingDaysChecked: [],
       services: [],
       userId: null,
       editMode: false,
@@ -251,6 +255,7 @@ export default {
     },
   },
   mounted() {
+
     const script = document.createElement('script');
     script.src = 'https://telegram.org/js/telegram-web-app.js';
     script.onload = () => {
@@ -328,6 +333,15 @@ export default {
             this.startTime = data.time_start;
             this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
+            for (let index = 0; index < data.work_days.length; index++) {
+              this.workingDaysChecked.push(
+                {
+                  "day": data.work_days[index],
+                  "checked": true
+                }
+              );
+            }
+            console.log(this.workingDaysChecked);
             if(data.out === true){
               this.orderType = "С выездом";
             } else if (data.out === false) {
