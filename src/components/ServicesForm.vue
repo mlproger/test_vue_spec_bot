@@ -422,6 +422,13 @@ export default {
           this.toggleEditMode();
         } 
       }
+      if(this.orderType === false) {
+        this.orderType = "Без выезда";
+      } else if (this.orderType === true){
+        this.orderType = "С выездом";
+      } else {
+        this.orderType = "";
+      }
     },
   },
 };
