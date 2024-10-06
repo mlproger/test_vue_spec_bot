@@ -335,7 +335,7 @@ export default {
         .catch(() => {
           this.editMode = true;
         });
-        axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=7078824389`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
+        axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=${this.userId}`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
         .then(response => {
           const data = response.data;
           this.selectedCity = data.data[0].city;
