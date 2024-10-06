@@ -270,6 +270,7 @@ export default {
         out: true,
         user_id: this.userId.toString(),
       };
+      
       try {
         await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
         await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
@@ -277,8 +278,8 @@ export default {
         this.toggleEditMode(); 
       } catch (error) {
         await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
-        alert('Информация успешно сохранена');
-        this.editMode = 0;
+        alert(error);
+        this.toggleEditMode(); 
       }
     },
   },
