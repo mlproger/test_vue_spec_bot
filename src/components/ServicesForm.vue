@@ -108,7 +108,7 @@
       <h3 style="margin-top: 20px;">Настройка рабочего времени</h3>
       <a-form layout="vertical">
         <a-form-item label="Начало рабочего дня:">
-          <a-select v-model="startTime" @change="onStartTimeChange" placeholder="Выберите время" class="custom-select">
+          <a-select v-model="startTime" @change="onStartTimeChange" placeholder= {{ formattedStartTime }} class="custom-select">
             <a-select-option
               v-for="time in timeOptions"
               :key="time"
