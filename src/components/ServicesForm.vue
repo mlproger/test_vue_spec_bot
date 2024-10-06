@@ -329,15 +329,20 @@ export default {
             this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
             this.orderType = data.out === true ? "С выездом" : data.out === false ? "Без выезда" : "";
-            axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=${this.userId}`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
-        .then(response => {
-          const data = response.data;
-          this.selectedCity = data.data[0].city;
-        });
           }
         })
         .catch(() => {
           this.editMode = true;
+        });
+        // axios.get(`${process.env.VUE_APP_STRAPI_BASE_URL}/tg-users?filters[tg_id][$eq]=${this.userId}`, { headers: { 'Authorization': `bearer ${process.env.VUE_APP_STRAPI_TOKEN}` } })
+        // .then(response => {
+        //   const data = response.data;
+        //   this.selectedCity = data.data[0].city;
+        // });
+        axios.get(`http://localhost:1337/api/tg-users?filters[tg_id][$eq]=${this.userId}`, { headers: { 'Authorization': `bearer 67eaf8b3e36158edcfc7739460a6be3bad0e00dbb68d4807b591fe24ea77c989a63e2410a23c8b9680dc14f84e1954fb7a92c2e1dd1d887be8113b2fc0c1ef05d408fcd825c321024c7a594a01ae074ce28ae702ac4516149175d0bc0f30bb113712cbe80f05ef9a4ca69dcbacbdb3101ed4c257a79a81651f6334f7148003f2` } })
+        .then(response => {
+          const data = response.data;
+          this.selectedCity = data.data[0].city;
         });
     },
     toggleEditMode() {
