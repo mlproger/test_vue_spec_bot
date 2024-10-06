@@ -156,7 +156,7 @@ export default {
       services: [],
       userId: null,
       editMode: false,
-      base_url: "https://4224-88-201-168-78.ngrok-free.app",
+      base_url: "https://b02d-88-201-168-78.ngrok-free.app",
     };
   },
   computed: {
