@@ -377,10 +377,10 @@ export default {
       this.selectedCategory = value;
     },
     async saveInfo() {
-      if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
-        alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
-        return;
-      }
+      // if (!this.startTime || !this.endTime || this.workingDays.length === 0) {
+      //   alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
+      //   return;
+      // }
 
       const dataToSend = {
         tasks: this.services,
@@ -390,6 +390,8 @@ export default {
         out: this.orderType,
         user_id: this.userId.toString(),
       };
+
+      console.log(dataToSend);
 
       try {
         const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } });
