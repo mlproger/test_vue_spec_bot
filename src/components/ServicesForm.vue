@@ -30,7 +30,7 @@
         </a-list-item>
         <a-list-item>
           <div style="flex-grow: 1;">
-            Тип заказа: {{ formattedStartTime }}
+            Тип заказа: {{ orderType }}
           </div>
         </a-list-item>
       </a-list>
