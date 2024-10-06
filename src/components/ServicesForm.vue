@@ -267,13 +267,13 @@ export default {
         out: true,
         user_id: this.userId.toString(),
       };
+      console.log(dataToSend);
       
       await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`).then(async () => {
-        axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
-        alert('Информация успешно сохранена');
+        alert('Юзер есть');
         this.toggleEditMode(); 
       }).catch(() => {
-        axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+        alert('Юзера нет есть');
         this.toggleEditMode(); 
       })
     },
