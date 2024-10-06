@@ -334,7 +334,7 @@ export default {
         .catch(() => {
           this.editMode = true;
         });
-        axios.get(`${this.base_url}/api/v1/users/${this.userId}`)
+        axios.get(`${this.base_url}/api/v1/users/${this.userId}`, { headers: { 'ngrok-skip-browser-warning': "oke" } })
         .then(response => {
           const data = response.data;
           this.selectedCity = data;
