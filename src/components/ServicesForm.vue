@@ -271,6 +271,7 @@ export default {
       try {
       // Пытаемся сделать GET запрос
         const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+        alert(response.status);
         if (response.status === 200) {
           await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
           alert("Информация обновлена");
