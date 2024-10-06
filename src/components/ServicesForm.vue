@@ -397,7 +397,7 @@ export default {
         const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } });
         if (response.status === 200) {
           await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend, { headers: { 'ngrok-skip-browser-warning': "oke" } });
-          await axios.put(`${this.base_url}/api/v1/tg-users/${this.userId}`, {"city": this.selectedCity}, { headers: { 'ngrok-skip-browser-warning': "oke" } });
+          await axios.put(`${this.base_url}/api/v1/users/${this.userId}`, {"city": this.selectedCity}, { headers: { 'ngrok-skip-browser-warning': "oke" } });
           alert("Информация обновлена");
           this.toggleEditMode();
         }
@@ -405,7 +405,7 @@ export default {
 
         if (error.response && error.response.status !== 200) {
           await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend, { headers: { 'ngrok-skip-browser-warning': "oke" } });
-          await axios.put(`${this.base_url}/api/v1/tg-users/${this.userId}`, {"city": this.selectedCity}, { headers: { 'ngrok-skip-browser-warning': "oke" } });
+          await axios.put(`${this.base_url}/api/v1/users/${this.userId}`, {"city": this.selectedCity}, { headers: { 'ngrok-skip-browser-warning': "oke" } });
           alert("Информация сохранена");
           this.toggleEditMode();
         } 
