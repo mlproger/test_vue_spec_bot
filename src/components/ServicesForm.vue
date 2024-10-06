@@ -223,15 +223,12 @@ export default {
     resetForm() {
       this.selectedCategory = null;
       this.cost = null;
-      console.log("!!!!!");
     },
     removeService(index) {
       this.services.splice(index, 1);
       this.resetForm();
-      console.log('After delete service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
     },
     addService() {
-      console.log('Before adding service - selectedCategory:', this.selectedCategory, 'cost:', this.cost);
       if (this.selectedCategory && this.cost) {
         this.services.push({ category: this.selectedCategory, cost: this.cost });
         this.isServiceModalVisible = false;
@@ -271,16 +268,14 @@ export default {
         user_id: this.userId.toString(),
       };
       
-      try {
-        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
-        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
+      await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`).then(async () => {
+        axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
         alert('Информация успешно сохранена');
         this.toggleEditMode(); 
-      } catch (error) {
-        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
-        alert(error);
+      }).catch(() => {
+        axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
         this.toggleEditMode(); 
-      }
+      })
     },
   },
 };
