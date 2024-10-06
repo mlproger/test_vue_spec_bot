@@ -156,7 +156,7 @@ export default {
       services: [],
       userId: null,
       editMode: false,
-      base_url: "https://b02d-88-201-168-78.ngrok-free.app",
+      base_url: "https://204a-88-201-168-78.ngrok-free.app",
     };
   },
   computed: {
@@ -267,28 +267,22 @@ export default {
         out: true,
         user_id: this.userId.toString(),
       };
-      console.log(dataToSend);
-      await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`).catch(function (error) {
-        alert(error.response.data);
-      })
       
-      // try {
-      // // Пытаемся сделать GET запрос
-      //   const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
-      //   alert(response.status);
-      //   if (response.status === 200) {
-      //     await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
-      //     alert("Информация обновлена");
-      //     this.toggleEditMode();
-      //   }
-      // } catch (error) {
+      try {
+        const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+        if (response.status === 200) {
+          await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
+          alert("Информация обновлена");
+          this.toggleEditMode();
+        }
+      } catch (error) {
 
-      //   if (error.response && error.response.status !== 200) {
-      //     await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
-      //     alert("Информация сохранена");
-      //     this.toggleEditMode();
-      //   } 
-      // }
+        if (error.response && error.response.status !== 200) {
+          await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+          alert("Информация сохранена");
+          this.toggleEditMode();
+        } 
+      }
     },
   },
 };
