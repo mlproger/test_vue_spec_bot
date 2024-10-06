@@ -328,7 +328,13 @@ export default {
             this.startTime = data.time_start;
             this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
-            this.orderType = data.out === true ? "С выездом" : data.out === false ? "Без выезда" : "";
+            if(data.out === true){
+              this.orderType = "С выездом";
+            } else if (data.out === false) {
+              this.orderType = "Без выезда";
+            } else {
+              this.orderType = "";
+            }
           }
         })
         .catch(() => {
@@ -381,6 +387,12 @@ export default {
       //   alert('Пожалуйста, укажите рабочее время и выберите рабочие дни');
       //   return;
       // }
+
+      if(this.orderType === "Без выезда") {
+        this.orderType = false;
+      } else {
+        this.orderType = true;
+      }
 
       const dataToSend = {
         tasks: this.services,
