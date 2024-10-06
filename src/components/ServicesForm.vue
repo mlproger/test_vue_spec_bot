@@ -28,6 +28,11 @@
             Рабочие дни: {{ workingDays.join(', ') }}
           </div>
         </a-list-item>
+        <a-list-item>
+          <div style="flex-grow: 1;">
+            Тип заказа: {{ formattedStartTime }}
+          </div>
+        </a-list-item>
       </a-list>
 
       <div class="button-container">
@@ -219,6 +224,7 @@ export default {
             this.startTime = data.time_start;
             this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
+            this.orderType = data.out || ""
           }
         })
         .catch(() => {
