@@ -269,11 +269,11 @@ export default {
       };
       console.log(dataToSend);
       
-      await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`).then(async () => {
-        alert('Юзер есть');
+      await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`).then(response => {
+        alert(response);
         this.toggleEditMode(); 
-      }).catch(() => {
-        alert('Юзера нет есть');
+      }).catch(error => {
+        alert(error);
         this.toggleEditMode(); 
       })
     },
