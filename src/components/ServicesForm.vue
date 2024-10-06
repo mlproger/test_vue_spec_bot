@@ -267,18 +267,18 @@ export default {
         out: true,
         user_id: this.userId.toString(),
       };
-      
+
       try {
-        const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+        const response = await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`, { headers: { 'ngrok-skip-browser-warning': "oke" } });
         if (response.status === 200) {
-          await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
+          await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend, { headers: { 'ngrok-skip-browser-warning': "oke" } });
           alert("Информация обновлена");
           this.toggleEditMode();
         }
       } catch (error) {
 
         if (error.response && error.response.status !== 200) {
-          await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+          await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend, { headers: { 'ngrok-skip-browser-warning': "oke" } });
           alert("Информация сохранена");
           this.toggleEditMode();
         } 
