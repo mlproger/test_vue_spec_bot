@@ -269,16 +269,17 @@ export default {
         work_days: this.workingDays,
         user_id: this.userId.toString(),
       };
-      try {
-        await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
-        await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
-        alert('Информация успешно сохранена');
-        this.toggleEditMode(); 
-      } catch (error) {
-        await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
-        alert('Информация успешно сохранена');
-        this.editMode = 0;
-      }
+      await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+      // try {
+      //   await axios.get(`${this.base_url}/api/v1/orders/${this.userId}/`);
+      //   await axios.put(`${this.base_url}/api/v1/orders/${this.userId}`, dataToSend);
+      //   alert('Информация успешно сохранена');
+      //   this.toggleEditMode(); 
+      // } catch (error) {
+      //   await axios.post(`${this.base_url}/api/v1/orders/`, dataToSend);
+      //   alert('Информация успешно сохранена');
+      //   this.editMode = 0;
+      // }
     },
   },
 };
