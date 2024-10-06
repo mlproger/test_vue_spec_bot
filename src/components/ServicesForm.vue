@@ -224,7 +224,7 @@ export default {
             this.startTime = data.time_start;
             this.endTime = data.time_end;
             this.workingDays = data.work_days || [];
-            this.orderType = data.out ? "С выездом" : "Без выезда" || ""
+            this.orderType = data.out === true ? "С выездом" : data.out === false ? "Без выезда" : "";
           }
         })
         .catch(() => {
